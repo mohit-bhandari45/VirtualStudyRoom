@@ -4,12 +4,13 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "dev": "node --watch dist/index.js",
+    "dev": "node dist/index.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write ."
   },
   "dependencies": {
+    "dotenv": "^16.4.5",
     "eslint-plugin-prettier": "^5.2.1",
     "express": "^4.21.1"
   },

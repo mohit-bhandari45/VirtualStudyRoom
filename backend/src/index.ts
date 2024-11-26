@@ -1,7 +1,7 @@
-const hello: string = "Rohit";
-console.log(hello);
-const blue = 8;
-const obj = {
-  a: 45,
-  b: 34,
-};
+import app from "./app.js";
+import dotenv from "dotenv";
+dotenv.config();
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => console.log(`Express Server started on PORT: ${PORT}`));

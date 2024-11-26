@@ -6,7 +6,8 @@
     "backend"
   ],
   "scripts": {
-    "dev": "concurrently \"yarn workspace frontend dev\" \"yarn workspace backend dev\""
+    "dev": "concurrently \"yarn workspace frontend dev\" \"yarn workspace backend dev\"",
+    "lint": "yarn workspace frontend lint && yarn workspace backend lint"
   },
   "devDependencies": {
     "concurrently": "^7.0.0"
