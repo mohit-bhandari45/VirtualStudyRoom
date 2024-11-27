@@ -3,11 +3,11 @@ name: Lint and Build Checks
 on:
     push:
         branches:
-            - main
+            - master
     
     pull_request:
         branches:
-            - main
+            - master
 
 defaults:
     run:
