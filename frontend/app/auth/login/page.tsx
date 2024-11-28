@@ -1,21 +1,25 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import Link from 'next/link';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
-import { useState } from 'react';
-import { Eye, EyeOff, Lock, Mail, Github, Linkedin } from 'lucide-react';
+import Image from "next/image";
+import Link from "next/link";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useState } from "react";
+import { Eye, EyeOff, Lock, Mail, Github, Linkedin } from "lucide-react";
+import axios from "axios";
+import { loginRoute } from "@/apis/api";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const router = useRouter();
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const calculatePasswordStrength = (pass: string) => {
     let strength = 0;
@@ -31,43 +35,59 @@ export default function LoginPage() {
     const newPassword = e.target.value;
     setPassword(newPassword);
     setPasswordStrength(calculatePasswordStrength(newPassword));
-    setError('');
+    setError("");
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!email) {
-      setError('Please enter your email');
-      return;
-    }
-    
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters long');
+      setError("Please enter your email");
       return;
     }
 
-    setError('');
-    console.log({ 
-      email, 
-      password, 
-      rememberMe 
-    });
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters long");
+      return;
+    }
+
+    setError("");
+    const response = await axios.post(
+      loginRoute,
+      {
+        email: email,
+        password: password,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    setEmail("");
+    setPassword("");
+    
+    if (response.status == 200) {
+      router.push("/");
+    } else {
+      console.log(response.data.msg);
+    }
   };
 
   const socialLoginOptions = [
-    { 
-      icon: Github, 
-      label: 'Continue with GitHub',
-      color: 'text-black',
-      onClick: () => console.log('GitHub Login')
+    {
+      icon: Github,
+      label: "Continue with GitHub",
+      color: "text-black",
+      onClick: () => console.log("GitHub Login"),
     },
-    { 
-      icon: Linkedin, 
-      label: 'Continue with LinkedIn',
-      color: 'text-blue-600',
-      onClick: () => console.log('LinkedIn Login')
-    }
+    {
+      icon: Linkedin,
+      label: "Continue with LinkedIn",
+      color: "text-blue-600",
+      onClick: () => console.log("LinkedIn Login"),
+    },
   ];
 
   return (
@@ -94,7 +114,8 @@ export default function LoginPage() {
             className="mx-auto mb-6 rounded-lg shadow-lg"
           />
           <h2 className="text-xl lg:text-2xl font-bold mb-4">
-            &quot;The journey of a thousand miles begins with a single step.&quot;
+            &quot;The journey of a thousand miles begins with a single
+            step.&quot;
           </h2>
           <p className="text-sm lg:text-base text-gray-300">
             Let every login be the start of something extraordinary.
@@ -106,8 +127,12 @@ export default function LoginPage() {
       <div className="relative z-10 flex w-full md:w-3/5 lg:w-[60%] items-center justify-center bg-white/90 md:bg-white p-6 lg:p-10">
         <div className="w-full max-w-lg space-y-6 border border-gray-200 p-8 md:shadow-lg rounded-xl">
           <div className="text-center">
-            <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
-            <p className="text-sm text-gray-600">Login to continue your journey</p>
+            <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
+              Welcome Back
+            </h1>
+            <p className="text-sm text-gray-600">
+              Login to continue your journey
+            </p>
           </div>
 
           {/* Error Message */}
@@ -120,11 +145,17 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email Input */}
             <div>
-              <Label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              <Label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Email Address
               </Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                <Mail
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                  size={20}
+                />
                 <Input
                   id="email"
                   type="email"
@@ -132,7 +163,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value);
-                    setError('');
+                    setError("");
                   }}
                   className="pl-10 w-full"
                   required
@@ -142,11 +173,17 @@ export default function LoginPage() {
 
             {/* Password Input */}
             <div>
-              <Label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+              <Label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Password
               </Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                <Lock
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                  size={20}
+                />
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
@@ -167,13 +204,17 @@ export default function LoginPage() {
 
               {/* Password Strength Indicator */}
               <div className="mt-1 h-1 w-full bg-gray-200 rounded-full overflow-hidden">
-                <div 
+                <div
                   className={`h-full ${
-                    passwordStrength === 0 ? 'bg-red-500 w-[20%]' :
-                    passwordStrength === 1 ? 'bg-orange-500 w-[40%]' :
-                    passwordStrength === 2 ? 'bg-yellow-500 w-[60%]' :
-                    passwordStrength === 3 ? 'bg-lime-500 w-[80%]' :
-                    'bg-green-500 w-full'
+                    passwordStrength === 0
+                      ? "bg-red-500 w-[20%]"
+                      : passwordStrength === 1
+                        ? "bg-orange-500 w-[40%]"
+                        : passwordStrength === 2
+                          ? "bg-yellow-500 w-[60%]"
+                          : passwordStrength === 3
+                            ? "bg-lime-500 w-[80%]"
+                            : "bg-green-500 w-full"
                   } transition-all duration-300`}
                 />
               </div>
@@ -182,20 +223,20 @@ export default function LoginPage() {
             {/* Remember Me & Forgot Password */}
             <div className="flex items-center justify-between text-sm">
               <div className="flex items-center space-x-2">
-                <Checkbox 
+                <Checkbox
                   id="remember"
                   checked={rememberMe}
                   onCheckedChange={() => setRememberMe(!rememberMe)}
                 />
-                <Label 
-                  htmlFor="remember" 
+                <Label
+                  htmlFor="remember"
                   className="text-gray-700 cursor-pointer"
                 >
                   Remember me
                 </Label>
               </div>
-              <Link 
-                href="/auth/forgot-password" 
+              <Link
+                href="/auth/forgot-password"
                 className="text-black hover:underline"
               >
                 Forgot password?
@@ -203,8 +244,8 @@ export default function LoginPage() {
             </div>
 
             {/* Login Button */}
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="w-full bg-black text-white hover:bg-gray-800"
             >
               Login
@@ -235,8 +276,11 @@ export default function LoginPage() {
 
           {/* Sign Up Link */}
           <p className="text-center text-sm text-gray-600">
-            Don&apos;t have an account?{' '}
-            <Link href="/auth/signup" className="text-black font-medium hover:underline">
+            Don&apos;t have an account?{" "}
+            <Link
+              href="/auth/signup"
+              className="text-black font-medium hover:underline"
+            >
               Sign Up
             </Link>
           </p>

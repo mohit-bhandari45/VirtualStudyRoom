@@ -1,95 +1,117 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Image from 'next/image';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Github, Linkedin } from 'lucide-react';
-import zxcvbn from 'zxcvbn';
+import { useState } from "react";
+import Image from "next/image";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Github, Linkedin } from "lucide-react";
+import zxcvbn from "zxcvbn";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+
+interface FormData {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
+/* Apis */
+import { signUpRoute } from "@/apis/api";
 
 export default function SignupPage() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
+  const router = useRouter();
+
+  const [formData, setFormData] = useState<FormData>({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
 
-  const [errors, setErrors] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
+  const [errors, setErrors] = useState<FormData>({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
 
   const [passwordStrength, setPasswordStrength] = useState({
     score: 0,
-    feedback: ''
+    feedback: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [id]: value
+      [id]: value,
     }));
 
     // Validate in real-time
     validateField(id, value);
 
     // Check password strength
-    if (id === 'password') {
+    if (id === "password") {
       const result = zxcvbn(value);
       setPasswordStrength({
         score: result.score,
-        feedback: result.feedback.warning || ''
+        feedback: result.feedback.warning || "",
       });
     }
   };
 
   const validateField = (id: string, value: string) => {
-    let errorMessage = '';
+    let errorMessage = "";
     switch (id) {
-      case 'name':
-        errorMessage = value.length < 2 ? 'Name must be at least 2 characters' : '';
+      case "name":
+        errorMessage =
+          value.length < 2 ? "Name must be at least 2 characters" : "";
         break;
-      case 'email':
+      case "email":
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        errorMessage = !emailRegex.test(value) ? 'Invalid email format' : '';
+        errorMessage = !emailRegex.test(value) ? "Invalid email format" : "";
         break;
-      case 'password':
-        errorMessage = value.length < 8 
-          ? 'Password must be at least 8 characters' 
-          : '';
+      case "password":
+        errorMessage =
+          value.length < 8 ? "Password must be at least 8 characters" : "";
         break;
-      case 'confirmPassword':
-        errorMessage = value !== formData.password 
-          ? 'Passwords do not match' 
-          : '';
+      case "confirmPassword":
+        errorMessage =
+          value !== formData.password ? "Passwords do not match" : "";
         break;
     }
 
-    setErrors(prev => ({
+    setErrors((prev) => ({
       ...prev,
-      [id]: errorMessage
+      [id]: errorMessage,
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Validate all fields before submission
-    const nameError = formData.name.length < 2 ? 'Name must be at least 2 characters' : '';
-    const emailError = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email) ? 'Invalid email format' : '';
-    const passwordError = formData.password.length < 8 ? 'Password must be at least 8 characters' : '';
-    const confirmPasswordError = formData.confirmPassword !== formData.password ? 'Passwords do not match' : '';
+    const nameError =
+      formData.name.length < 2 ? "Name must be at least 2 characters" : "";
+    const emailError = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
+      ? "Invalid email format"
+      : "";
+    const passwordError =
+      formData.password.length < 8
+        ? "Password must be at least 8 characters"
+        : "";
+    const confirmPasswordError =
+      formData.confirmPassword !== formData.password
+        ? "Passwords do not match"
+        : "";
 
     setErrors({
       name: nameError,
       email: emailError,
       password: passwordError,
-      confirmPassword: confirmPasswordError
+      confirmPassword: confirmPasswordError,
     });
 
     // Check if there are any errors
@@ -97,24 +119,49 @@ export default function SignupPage() {
       return;
     }
 
-    // Proceed with form submission
-    console.log('Form submitted', { 
-      name: formData.name, 
-      email: formData.email 
+    const response = await axios.post(
+      signUpRoute,
+      {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    setFormData({ 
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
     });
+
+    if (response.status == 201) {
+      router.push("/auth/login");
+    } else {
+      console.log(response.data.msg);
+    }
   };
 
   const renderPasswordStrengthBar = () => {
-    const colors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-green-400', 'bg-green-600'];
+    const colors = [
+      "bg-red-500",
+      "bg-orange-500",
+      "bg-yellow-500",
+      "bg-green-400",
+      "bg-green-600",
+    ];
     return (
       <div className="flex space-x-1 h-1 mt-1">
         {[0, 1, 2, 3, 4].map((index) => (
-          <div 
-            key={index} 
+          <div
+            key={index}
             className={`flex-1 rounded ${
-              index <= passwordStrength.score 
-                ? colors[index] 
-                : 'bg-gray-200'
+              index <= passwordStrength.score ? colors[index] : "bg-gray-200"
             }`}
           />
         ))}
@@ -125,14 +172,14 @@ export default function SignupPage() {
   const socialSignupButtons = [
     {
       icon: Github,
-      text: 'Sign up with GitHub',
-      color: 'text-black hover:bg-accent'
+      text: "Sign up with GitHub",
+      color: "text-black hover:bg-accent",
     },
     {
       icon: Linkedin,
-      text: 'Sign up with LinkedIn',
-      color: 'text-black hover:bg-accent'
-    }
+      text: "Sign up with LinkedIn",
+      color: "text-black hover:bg-accent",
+    },
   ];
 
   return (
@@ -153,18 +200,20 @@ export default function SignupPage() {
           Every signup is the first step towards greatness.
         </p>
       </div>
-      
+
       {/* Right Section */}
       <div className="flex w-full md:w-2/3 flex-col items-center justify-center bg-white p-10">
         <div className="w-full max-w-lg border rounded-lg p-8 shadow-md">
-          <h1 className="mb-6 text-3xl font-bold text-black text-center">Sign Up</h1>
-          
+          <h1 className="mb-6 text-3xl font-bold text-black text-center">
+            Sign Up
+          </h1>
+
           {/* Social Signup Options */}
           <div className="space-y-3 mb-6">
             {socialSignupButtons.map(({ icon: Icon, text, color }) => (
-              <Button 
-                key={text} 
-                variant="outline" 
+              <Button
+                key={text}
+                variant="outline"
                 className={`w-full ${color} flex items-center justify-center`}
               >
                 <Icon className="mr-2 h-5 w-5" />
@@ -183,7 +232,10 @@ export default function SignupPage() {
           {/* Signup Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="name" className="block text-sm font-medium text-gray-700">
+              <Label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Full Name
               </Label>
               <Input
@@ -192,7 +244,7 @@ export default function SignupPage() {
                 placeholder="Enter your full name"
                 value={formData.name}
                 onChange={handleChange}
-                className={`mt-1 w-full ${errors.name ? 'border-red-500' : ''}`}
+                className={`mt-1 w-full ${errors.name ? "border-red-500" : ""}`}
                 required
               />
               {errors.name && (
@@ -201,7 +253,10 @@ export default function SignupPage() {
             </div>
 
             <div>
-              <Label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <Label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Email
               </Label>
               <Input
@@ -210,7 +265,7 @@ export default function SignupPage() {
                 placeholder="Enter your email"
                 value={formData.email}
                 onChange={handleChange}
-                className={`mt-1 w-full ${errors.email ? 'border-red-500' : ''}`}
+                className={`mt-1 w-full ${errors.email ? "border-red-500" : ""}`}
                 required
               />
               {errors.email && (
@@ -219,7 +274,10 @@ export default function SignupPage() {
             </div>
 
             <div>
-              <Label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <Label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Password
               </Label>
               <Input
@@ -228,7 +286,7 @@ export default function SignupPage() {
                 placeholder="Enter your password"
                 value={formData.password}
                 onChange={handleChange}
-                className={`mt-1 w-full ${errors.password ? 'border-red-500' : ''}`}
+                className={`mt-1 w-full ${errors.password ? "border-red-500" : ""}`}
                 required
               />
               {renderPasswordStrengthBar()}
@@ -243,7 +301,10 @@ export default function SignupPage() {
             </div>
 
             <div>
-              <Label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+              <Label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Confirm Password
               </Label>
               <Input
@@ -252,16 +313,18 @@ export default function SignupPage() {
                 placeholder="Confirm your password"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                className={`mt-1 w-full ${errors.confirmPassword ? 'border-red-500' : ''}`}
+                className={`mt-1 w-full ${errors.confirmPassword ? "border-red-500" : ""}`}
                 required
               />
               {errors.confirmPassword && (
-                <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.confirmPassword}
+                </p>
               )}
             </div>
 
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="w-full bg-black text-white hover:bg-gray-800"
             >
               Create Account
@@ -269,8 +332,11 @@ export default function SignupPage() {
           </form>
 
           <p className="mt-6 text-sm text-center text-gray-600">
-            Already have an account?{' '}
-            <a href="/auth/login" className="text-black font-medium hover:underline">
+            Already have an account?{" "}
+            <a
+              href="/auth/login"
+              className="text-black font-medium hover:underline"
+            >
               Login
             </a>
           </p>
