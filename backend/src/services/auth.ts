@@ -1,4 +1,4 @@
-import JWT from "jsonwebtoken";
+import JWT, { JwtPayload } from "jsonwebtoken";
 
 const secret: string = process.env.JWT_SECRET!;
 
@@ -12,4 +12,9 @@ function generateToken(payload: UserPayload): string {
   return token;
 }
 
-export { generateToken };
+function decodeToken(token: string): string | JwtPayload {
+  const user = JWT.verify(token, secret);
+  return user;
+}
+
+export { generateToken, decodeToken };
