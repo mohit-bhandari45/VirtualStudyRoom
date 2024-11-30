@@ -1,17 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Github, Linkedin } from "lucide-react";
+import { Github } from "lucide-react";
 import zxcvbn from "zxcvbn";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-
-import { jwtDecode } from "jwt-decode";
-import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 
 interface FormData {
   name: string;
@@ -24,6 +20,7 @@ interface FormData {
 import { signUpRoute } from "@/apis/api";
 import handleGoogleLogin from "@/utils/utils";
 import LeftPanel from "@/components/AuthComponents/LeftPanel";
+import { GoogleLogin } from "@react-oauth/google";
 
 export default function SignupPage() {
   const router = useRouter();

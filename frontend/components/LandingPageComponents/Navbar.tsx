@@ -1,14 +1,22 @@
+"use client";
+
 import Link from "next/link";
-import { FC } from "react";
+import { useRouter } from "next/navigation";
+import { FC, useEffect } from "react";
 
 const Navbar: FC = () => {
+  const router = useRouter();
+  useEffect(() => {
+    if (sessionStorage.getItem("token")) {
+      router.push("/dashboard");
+    }
+  }, [router]);
+
   return (
     <nav className="flex font-[Helvetica] items-center justify-between px-6 py-4 bg-black text-white shadow-lg">
       {/* Logo */}
       <div className="text-2xl font-bold">
-        <Link href={"/"}>
-        Kollab
-        </Link>
+        <Link href={"/"}>Kollab</Link>
       </div>
 
       {/* Navigation Links */}

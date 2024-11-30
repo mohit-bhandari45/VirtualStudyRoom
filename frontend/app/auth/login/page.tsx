@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
-import { Eye, EyeOff, Lock, Mail, Github, Linkedin } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, Github } from "lucide-react";
 import axios from "axios";
 import { loginRoute } from "@/apis/api";
 import { useRouter } from "next/navigation";
@@ -72,6 +72,8 @@ export default function LoginPage() {
     setPassword("");
 
     if (response.status == 200) {
+      const token = response.data.token;
+      sessionStorage.setItem("token", token);
       router.push("/dashboard");
     } else {
       console.log(response.data.msg);
