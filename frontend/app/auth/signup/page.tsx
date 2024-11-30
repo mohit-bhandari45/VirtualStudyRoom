@@ -10,6 +10,9 @@ import zxcvbn from "zxcvbn";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
+import { jwtDecode } from "jwt-decode";
+import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
+
 interface FormData {
   name: string;
   email: string;
@@ -19,6 +22,8 @@ interface FormData {
 
 /* Apis */
 import { signUpRoute } from "@/apis/api";
+import handleGoogleLogin from "@/utils/utils";
+import LeftPanel from "@/components/AuthComponents/LeftPanel";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -133,7 +138,7 @@ export default function SignupPage() {
       }
     );
 
-    setFormData({ 
+    setFormData({
       name: "",
       email: "",
       password: "",
@@ -175,31 +180,16 @@ export default function SignupPage() {
       text: "Sign up with GitHub",
       color: "text-black hover:bg-accent",
     },
-    {
-      icon: Linkedin,
-      text: "Sign up with LinkedIn",
-      color: "text-black hover:bg-accent",
-    },
   ];
 
   return (
     <div className="flex h-screen">
       {/* Left Section */}
-      <div className="hidden md:flex w-1/3 flex-col items-center justify-center bg-black text-white p-10">
-        <Image
-          src="https://imgs.search.brave.com/LIi1vUzQmDCaEhb7juR4p6vDEtk75q0bF_L0XWvvrFI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/cGl4YWJheS5jb20v/cGhvdG8vMjAxNi8w/Ny8yMC8wMC8yNS93/aW5uaW5nLTE1Mjk0/MDJfNjQwLmpwZw"
-          alt="Inspirational Quote"
-          width={400}
-          height={400}
-          className="mb-6 rounded-lg"
-        />
-        <h2 className="text-2xl font-bold text-center">
-          &quot;Be the change you wish to see in the world.&quot;
-        </h2>
-        <p className="mt-4 text-center text-gray-300">
-          Every signup is the first step towards greatness.
-        </p>
-      </div>
+      <LeftPanel
+        src="https://imgs.search.brave.com/LIi1vUzQmDCaEhb7juR4p6vDEtk75q0bF_L0XWvvrFI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/cGl4YWJheS5jb20v/cGhvdG8vMjAxNi8w/Ny8yMC8wMC8yNS93/aW5uaW5nLTE1Mjk0/MDJfNjQwLmpwZw"
+        quote="Be the change you wish to see in the world."
+        shortLine="Every signup is the first step towards greatness."
+      />
 
       {/* Right Section */}
       <div className="flex w-full md:w-2/3 flex-col items-center justify-center bg-white p-10">
@@ -220,6 +210,21 @@ export default function SignupPage() {
                 {text}
               </Button>
             ))}
+            <div className="flex flex-col items-center justify-center">
+              <GoogleLogin
+                logo_alignment="center"
+                theme="filled_black"
+                onSuccess={async (credentialResponse) => {
+                  const login = await handleGoogleLogin(credentialResponse);
+                  if (login) {
+                    router.push("/dashboard");
+                  }
+                }}
+                onError={() => {
+                  console.log("Login Failed");
+                }}
+              />
+            </div>
           </div>
 
           {/* Divider */}

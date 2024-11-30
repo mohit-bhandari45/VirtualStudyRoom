@@ -48,7 +48,7 @@ async function handleLoginUser(req: Request, res: Response): Promise<any> {
       return res.status(401).json({ msg: "Email not found" });
     }
 
-    const salt: string = user.salt;
+    const salt: string = user.salt!;
     const userProvidedHashedPassword: string = generateHash(password, salt);
 
     if (userProvidedHashedPassword != user.password) {
@@ -67,4 +67,42 @@ async function handleLoginUser(req: Request, res: Response): Promise<any> {
   }
 }
 
-export { handleCreateUser, handleLoginUser };
+async function handleGoogleLogin(req: Request, res: Response): Promise<any> {
+  const { name, email } = req.body;
+  console.log(name, email);
+
+  try {
+    const existingUser = await prismaClient.user.findFirst({
+      where: {
+        email: email,
+      },
+    });
+
+    if (existingUser) {
+      const payload: UserPayload = {
+        id: existingUser.id,
+        email: existingUser.email,
+      };
+      const token: string = generateToken(payload);
+      return res.status(200).json({ token });
+    }
+
+    const user = await prismaClient.user.create({
+      data: {
+        name,
+        email,
+      },
+    });
+    const payload: UserPayload = {
+      id: user.id,
+      email: user.email,
+    };
+    const token: string = generateToken(payload);
+    return res.status(200).json({ token });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ msg: "Internal Server Error" });
+  }
+}
+
+export { handleCreateUser, handleLoginUser, handleGoogleLogin };

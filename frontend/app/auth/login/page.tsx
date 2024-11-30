@@ -11,6 +11,9 @@ import { Eye, EyeOff, Lock, Mail, Github, Linkedin } from "lucide-react";
 import axios from "axios";
 import { loginRoute } from "@/apis/api";
 import { useRouter } from "next/navigation";
+import { GoogleLogin } from "@react-oauth/google";
+import handleGoogleLogin from "@/utils/utils";
+import LeftPanel from "@/components/AuthComponents/LeftPanel";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -67,9 +70,9 @@ export default function LoginPage() {
 
     setEmail("");
     setPassword("");
-    
+
     if (response.status == 200) {
-      router.push("/");
+      router.push("/dashboard");
     } else {
       console.log(response.data.msg);
     }
@@ -81,12 +84,6 @@ export default function LoginPage() {
       label: "Continue with GitHub",
       color: "text-black",
       onClick: () => console.log("GitHub Login"),
-    },
-    {
-      icon: Linkedin,
-      label: "Continue with LinkedIn",
-      color: "text-blue-600",
-      onClick: () => console.log("LinkedIn Login"),
     },
   ];
 
@@ -104,24 +101,12 @@ export default function LoginPage() {
       </div>
 
       {/* Desktop Left Section - Inspirational Quote */}
-      <div className="hidden md:flex md:w-2/5 lg:w-[40%] bg-black text-white items-center justify-center p-6 lg:p-10">
-        <div className="text-center max-w-md">
-          <Image
-            src="https://imgs.search.brave.com/LIi1vUzQmDCaEhb7juR4p6vDEtk75q0bF_L0XWvvrFI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/cGl4YWJheS5jb20v/cGhvdG8vMjAxNi8w/Ny8yMC8wMC8yNS93/aW5uaW5nLTE1Mjk0/MDJfNjQwLmpwZw"
-            alt="Inspirational Quote"
-            width={400}
-            height={400}
-            className="mx-auto mb-6 rounded-lg shadow-lg"
-          />
-          <h2 className="text-xl lg:text-2xl font-bold mb-4">
-            &quot;The journey of a thousand miles begins with a single
-            step.&quot;
-          </h2>
-          <p className="text-sm lg:text-base text-gray-300">
-            Let every login be the start of something extraordinary.
-          </p>
-        </div>
-      </div>
+      <LeftPanel
+        src="https://imgs.search.brave.com/LIi1vUzQmDCaEhb7juR4p6vDEtk75q0bF_L0XWvvrFI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/cGl4YWJheS5jb20v/cGhvdG8vMjAxNi8w/Ny8yMC8wMC8yNS93/aW5uaW5nLTE1Mjk0/MDJfNjQwLmpwZw"
+        quote="The journey of a thousand miles begins with a single
+            step."
+        shortLine="Let every login be the start of something extraordinary."
+      />
 
       {/* Right Section - Login Form */}
       <div className="relative z-10 flex w-full md:w-3/5 lg:w-[60%] items-center justify-center bg-white/90 md:bg-white p-6 lg:p-10">
@@ -272,6 +257,21 @@ export default function LoginPage() {
                 <span>{option.label}</span>
               </Button>
             ))}
+            <div className="flex flex-col items-center justify-center">
+              <GoogleLogin
+                logo_alignment="center"
+                theme="filled_black"
+                onSuccess={async (credentialResponse) => {
+                  const login = await handleGoogleLogin(credentialResponse);
+                  if (login) {
+                    router.push("/dashboard");
+                  }
+                }}
+                onError={() => {
+                  console.log("Login Failed");
+                }}
+              />
+            </div>
           </div>
 
           {/* Sign Up Link */}
