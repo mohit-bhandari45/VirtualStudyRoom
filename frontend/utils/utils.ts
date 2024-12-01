@@ -3,9 +3,17 @@ import { jwtDecode, JwtPayload } from "jwt-decode";
 import { googleRoute } from "@/apis/api";
 import axios from "axios";
 
+interface GoogleDetails {
+    name: string,
+    email: string
+}
+
+interface CustomPayload extends GoogleDetails, JwtPayload {
+}
+
 const handleGoogleLogin = async (credentialResponse: CredentialResponse): Promise<boolean> => {
     const token = credentialResponse.credential;
-    const data: JwtPayload = jwtDecode(token as string);
+    const data: CustomPayload = jwtDecode<CustomPayload>(token as string);
     const response = await axios.post(googleRoute, {
         name: data.name,
         email: data.email
@@ -18,6 +26,7 @@ const handleGoogleLogin = async (credentialResponse: CredentialResponse): Promis
 
     const responseToken: string = response.data.token;
     sessionStorage.setItem("token", responseToken);
+    console.log(sessionStorage.getItem("token"))
     if (response.status == 200) {
         return true;
     }

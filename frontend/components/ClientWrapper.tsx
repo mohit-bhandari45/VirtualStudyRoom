@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { AppSidebar } from "./AuthComponents/Sidebar";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "./ui/sidebar";
 import { Separator } from "@radix-ui/react-separator";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 export default function ClientWrapper({
   children,
@@ -35,7 +36,9 @@ export default function ClientWrapper({
           <main className="flex-grow p-4">{children}</main>
         </div>
       ) : (
-        children
+        <GoogleOAuthProvider clientId="500049450131-u16ee3nuhv9lqmknn3pggadq1anu9e8a.apps.googleusercontent.com">
+          {children}
+        </GoogleOAuthProvider>
       )}
     </>
   );
