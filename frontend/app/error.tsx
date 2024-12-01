@@ -1,3 +1,5 @@
+"use client"
+
 // app/error.tsx
 import React from 'react';
 
