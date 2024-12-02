@@ -8,8 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
 import { Eye, EyeOff, Lock, Mail, Github } from "lucide-react";
-// import axios from "axios";
-// import { loginRoute } from "@/apis/api";
+import axios from "axios";
+import { loginRoute } from "@/apis/api";
 import { useRouter } from "next/navigation";
 import { GoogleLogin } from "@react-oauth/google";
 import handleGoogleLogin from "@/utils/utils";
@@ -55,29 +55,29 @@ export default function LoginPage() {
     }
 
     setError("");
-    // const response = await axios.post(
-    //   loginRoute,
-    //   {
-    //     email: email,
-    //     password: password,
-    //   },
-    //   {
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //   }
-    // );
+    const response = await axios.post(
+      loginRoute,
+      {
+        email: email,
+        password: password,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     setEmail("");
     setPassword("");
 
-    // if (response.status == 200) {
-    //   const token = response.data.token;
-    //   sessionStorage.setItem("token", token);
-    //   router.push("/dashboard");
-    // } else {
-    //   console.log(response.data.msg);
-    // }
+    if (response.status == 200) {
+      const token = response.data.token;
+      sessionStorage.setItem("token", token);
+      router.push("/dashboard");
+    } else {
+      console.log(response.data.msg);
+    }
   };
 
   const socialLoginOptions = [
@@ -280,7 +280,7 @@ export default function LoginPage() {
           <p className="text-center text-sm text-gray-600">
             Don&apos;t have an account?{" "}
             <Link
-              href="/auth/signup"
+              href="/signup"
               className="text-black font-medium hover:underline"
             >
               Sign Up

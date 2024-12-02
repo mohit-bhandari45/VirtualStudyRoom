@@ -144,7 +144,7 @@ export default function SignupPage() {
     });
 
     if (response.status == 201) {
-      router.push("/auth/login");
+      router.push("/login");
     } else {
       console.log(response.data.msg);
     }
@@ -337,7 +337,7 @@ export default function SignupPage() {
           <p className="mt-6 text-sm text-center text-gray-600">
             Already have an account?{" "}
             <Link
-              href="/auth/login"
+              href="/login"
               className="text-black font-medium hover:underline"
             >
               Login
