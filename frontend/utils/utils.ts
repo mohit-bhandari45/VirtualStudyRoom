@@ -1,3 +1,5 @@
+"use client"
+
 import { CredentialResponse } from "@react-oauth/google";
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import { googleRoute } from "@/apis/api";

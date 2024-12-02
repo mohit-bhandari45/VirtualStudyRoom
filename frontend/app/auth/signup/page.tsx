@@ -21,6 +21,7 @@ import { signUpRoute } from "@/apis/api";
 import handleGoogleLogin from "@/utils/utils";
 import LeftPanel from "@/components/AuthComponents/LeftPanel";
 import { GoogleLogin } from "@react-oauth/google";
+import Link from "next/link";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -335,12 +336,12 @@ export default function SignupPage() {
 
           <p className="mt-6 text-sm text-center text-gray-600">
             Already have an account?{" "}
-            <a
+            <Link
               href="/auth/login"
               className="text-black font-medium hover:underline"
             >
               Login
-            </a>
+            </Link>
           </p>
         </div>
       </div>

@@ -1,13 +1,15 @@
+"use client"
+
 import Image from "next/image";
 import React from "react";
 
 interface LeftPanelProps {
-    src:string
+  src: string;
   quote: string;
   shortLine: string;
 }
 
-const LeftPanel: React.FC<LeftPanelProps> = ({ src,quote, shortLine }) => {
+const LeftPanel: React.FC<LeftPanelProps> = ({ src, quote, shortLine }) => {
   return (
     <div className="hidden md:flex w-1/3 flex-col items-center justify-center bg-black text-white p-10">
       <Image
