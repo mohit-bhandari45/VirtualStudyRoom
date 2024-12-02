@@ -26,7 +26,6 @@ const handleGoogleLogin = async (credentialResponse: CredentialResponse): Promis
 
     const responseToken: string = response.data.token;
     sessionStorage.setItem("token", responseToken);
-    console.log(sessionStorage.getItem("token"))
     if (response.status == 200) {
         return true;
     }

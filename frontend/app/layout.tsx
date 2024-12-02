@@ -1,7 +1,7 @@
-import ClientWrapper from "@/components/ClientWrapper";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -24,13 +24,14 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ClientWrapper>{children}</ClientWrapper>;
+        <GoogleOAuthProvider clientId="500049450131-u16ee3nuhv9lqmknn3pggadq1anu9e8a.apps.googleusercontent.com">
+          {children}
+        </GoogleOAuthProvider>
       </body>
     </html>
   );

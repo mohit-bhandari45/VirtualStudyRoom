@@ -69,7 +69,6 @@ async function handleLoginUser(req: Request, res: Response): Promise<any> {
 
 async function handleGoogleLogin(req: Request, res: Response): Promise<any> {
   const { name, email } = req.body;
-  console.log(name, email);
 
   try {
     const existingUser = await prismaClient.user.findFirst({

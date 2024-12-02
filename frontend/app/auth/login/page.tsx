@@ -70,7 +70,7 @@ export default function LoginPage() {
 
     setEmail("");
     setPassword("");
-
+    
     if (response.status == 200) {
       const token = response.data.token;
       sessionStorage.setItem("token", token);
