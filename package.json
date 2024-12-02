@@ -11,9 +11,11 @@
     "lint": "yarn workspace web lint && yarn workspace backend lint"
   },
   "devDependencies": {
+    "@types/zxcvbn": "^4.4.5",
     "concurrently": "^7.0.0"
   },
   "dependencies": {
-    "jwt-decode": "^4.0.0"
+    "jwt-decode": "^4.0.0",
+    "zxcvbn": "^4.4.2"
   }
 }
