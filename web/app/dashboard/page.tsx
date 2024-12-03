@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 /* Shadcn Components */
 import {
@@ -25,15 +25,23 @@ import TotalRoomCard from "@/components/DashBoardComponents/TotalRoomCard";
 
 export default function Page() {
   const router = useRouter();
+  const [loading, setLoading] = useState<boolean>(true);
   const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
     const token: string | null = sessionStorage.getItem("token");
     setToken(token);
+    setLoading(false);
   }, []);
 
-  if (!token) {
-    router.push("/auth/login");
+  useEffect(() => {
+    if (!loading && !token) {
+      router.push("/auth/login");
+    }
+  }, [loading, token, router]);
+
+  if (loading) {
+    <div>Loading...</div>;
   }
 
   return (
