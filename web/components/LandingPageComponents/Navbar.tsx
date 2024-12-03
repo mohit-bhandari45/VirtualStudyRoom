@@ -34,12 +34,12 @@ function Navbar() {
 
       {/* Action Buttons */}
       <div className="space-x-4">
-        <Link href={"/login"}>
+        <Link href={"/auth/login"}>
           <button className="px-4 py-2 rounded-md bg-white text-black hover:bg-gray-200">
             Log In
           </button>
         </Link>
-        <Link href={"/signup"}>
+        <Link href={"/auth/signup"}>
           <button className="px-4 py-2 rounded-md bg-gray-800 hover:bg-gray-700">
             Sign Up
           </button>
