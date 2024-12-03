@@ -1,5 +1,9 @@
-// import TotalRoomsCard from "@/components/DashBoardComponents/TotalRoomCard";
-import TotalRoomCard from "@/components/DashBoardComponents/TotalRoomCard";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+
+/* Shadcn Components */
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -11,13 +15,27 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { LayoutGrid, PlusCircle } from "lucide-react";
 import source from "./data";
+
+/* React Components */
 import ActiveRoomCard from "@/components/DashBoardComponents/ActiveRoomCard";
 import TotalUserCard from "@/components/DashBoardComponents/TotalUserCard";
 import EventCard from "@/components/DashBoardComponents/EventCard";
 import RecentActivity from "@/components/DashBoardComponents/RecentActivity";
-// import { roomStats } from "./data";
+import TotalRoomCard from "@/components/DashBoardComponents/TotalRoomCard";
 
 export default function Page() {
+  const router = useRouter();
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    const token: string | null = sessionStorage.getItem("token");
+    setToken(token);
+  }, []);
+
+  if (!token) {
+    router.push("/auth/login");
+  }
+
   return (
     <SidebarInset>
       <header className="flex h-16 shrink-0 items-center gap-2">
