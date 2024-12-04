@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 /* Shadcn Components */
 import {
@@ -10,18 +10,18 @@ import {
   BreadcrumbLink,
   BreadcrumbList,
 } from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
-import { LayoutGrid, PlusCircle } from "lucide-react";
+import { LayoutGrid } from "lucide-react";
 import source from "./data";
 
 /* React Components */
+import { CreateRoom } from "@/components/CreateRoom";
 import ActiveRoomCard from "@/components/DashBoardComponents/ActiveRoomCard";
-import TotalUserCard from "@/components/DashBoardComponents/TotalUserCard";
 import EventCard from "@/components/DashBoardComponents/EventCard";
 import RecentActivity from "@/components/DashBoardComponents/RecentActivity";
 import TotalRoomCard from "@/components/DashBoardComponents/TotalRoomCard";
+import TotalUserCard from "@/components/DashBoardComponents/TotalUserCard";
 
 export default function Page() {
   const router = useRouter();
@@ -72,10 +72,7 @@ export default function Page() {
               <LayoutGrid className="mr-3 text-primary" size={24} />
               DashBoard
             </h1>
-            <Button className="bg-black hover:bg-gray-800 text-white">
-              <PlusCircle className="mr-2" size={20} />
-              Create New Room
-            </Button>
+            <CreateRoom />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">

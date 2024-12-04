@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Eye, EyeOff, Lock, Mail, Github } from "lucide-react";
 import axios from "axios";
 import { loginRoute } from "@/apis/api";
@@ -14,6 +14,12 @@ import { useRouter } from "next/navigation";
 import { GoogleLogin } from "@react-oauth/google";
 import handleGoogleLogin from "@/utils/utils";
 import LeftPanel from "@/components/AuthComponents/LeftPanel";
+import { toast } from "@/hooks/use-toast";
+
+interface AuthStates {
+  token: string | null;
+  loading: boolean;
+}
 
 export default function LoginPage() {
   const router = useRouter();
@@ -23,6 +29,19 @@ export default function LoginPage() {
   const [rememberMe, setRememberMe] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [error, setError] = useState("");
+
+  const [authStates, setAuthStates] = useState<AuthStates>({
+    token: null,
+    loading: true,
+  });
+
+  useEffect(() => {
+    const token: string | null = sessionStorage.getItem("token");
+    setAuthStates({ ...authStates, token, loading: false });
+    if (authStates.token && !authStates.loading) {
+      router.push("/dashboard");
+    }
+  }, [router]);
 
   const calculatePasswordStrength = (pass: string) => {
     let strength = 0;
@@ -76,6 +95,10 @@ export default function LoginPage() {
       sessionStorage.setItem("token", token);
       router.push("/dashboard");
     } else {
+      toast({
+        title: response.data.msg,
+        description: "There was a problem with your request.",
+      });
       console.log(response.data.msg);
     }
   };
@@ -88,6 +111,10 @@ export default function LoginPage() {
       onClick: () => console.log("GitHub Login"),
     },
   ];
+
+  if (authStates.loading) {
+    return <div>..Loading</div>;
+  }
 
   return (
     <div className="relative flex min-h-screen">
@@ -266,7 +293,15 @@ export default function LoginPage() {
                 onSuccess={async (credentialResponse) => {
                   const login = await handleGoogleLogin(credentialResponse);
                   if (login) {
+                    toast({
+                      title: "Login Successfull!",
+                    });
                     router.push("/dashboard");
+                  } else {
+                    toast({
+                      title: "Uh oh! Something went wrong.",
+                      description: "There was a problem with your request.",
+                    });
                   }
                 }}
                 onError={() => {
