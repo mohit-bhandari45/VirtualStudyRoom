@@ -1,8 +1,15 @@
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Building } from "lucide-react";
+"use client";
 
-const TotalRoomCard = ({ totalRooms }: { totalRooms: number }) => {
+import { Building } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+
+const TotalRoomCard = ({
+  totalRooms,
+}: {
+  totalRooms: number;
+}) => {
+  
+
   return (
     <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

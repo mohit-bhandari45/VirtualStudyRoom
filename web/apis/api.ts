@@ -5,4 +5,8 @@ const loginRoute = `${baseURL}/auth/login`;
 const googleRoute = `${baseURL}/auth/google`;
 const getProfileRoute = `${baseURL}/api/profile`;
 
-export { signUpRoute, loginRoute, googleRoute, getProfileRoute };
+
+/* Room routes */
+const getRoomsRoute=`${baseURL}/api/room`;
+
+export { signUpRoute, loginRoute, googleRoute, getProfileRoute,getRoomsRoute };

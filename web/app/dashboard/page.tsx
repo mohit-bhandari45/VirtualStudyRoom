@@ -22,11 +22,14 @@ import EventCard from "@/components/DashBoardComponents/EventCard";
 import RecentActivity from "@/components/DashBoardComponents/RecentActivity";
 import TotalRoomCard from "@/components/DashBoardComponents/TotalRoomCard";
 import TotalUserCard from "@/components/DashBoardComponents/TotalUserCard";
+import axios from "axios";
+import { getRoomsRoute } from "@/apis/api";
 
 export default function Page() {
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(true);
   const [token, setToken] = useState<string | null>(null);
+  const [rooms, setRooms] = useState([]);
 
   useEffect(() => {
     const token: string | null = sessionStorage.getItem("token");
@@ -39,6 +42,20 @@ export default function Page() {
       router.push("/auth/login");
     }
   }, [loading, token, router]);
+
+
+  useEffect(() => {
+    const getAllRooms = async () => {
+      const response = await axios.get(getRoomsRoute, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setRooms(response.data.userWithRooms.rooms);
+      source.totalRooms=rooms.length;
+    };
+    getAllRooms();
+  }, [rooms, token]);
 
   if (loading) {
     <div>Loading...</div>;
@@ -55,11 +72,6 @@ export default function Page() {
               <BreadcrumbItem className="hidden md:block">
                 <BreadcrumbLink href="/dashboard">Home</BreadcrumbLink>
               </BreadcrumbItem>
-
-              {/* <BreadcrumbSeparator className="hidden md:block" /> */}
-              {/* <BreadcrumbItem>
-                <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-              </BreadcrumbItem> */}
             </BreadcrumbList>
           </Breadcrumb>
         </div>
