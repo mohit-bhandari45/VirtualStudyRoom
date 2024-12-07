@@ -153,7 +153,7 @@ export default function SignupPage() {
     });
 
     if (response.status == 201) {
-      router.push("/login");
+      router.push("/auth/login");
     } else {
       toast({
         title: response.data.msg,

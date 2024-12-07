@@ -1,10 +1,8 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Users } from "lucide-react";
-import { useAppContext } from "@/context/AppContext";
 
 const TotalUserCard = () => {
-  const { rooms } = useAppContext();
   const totalParticipants = 0;
 
   return (

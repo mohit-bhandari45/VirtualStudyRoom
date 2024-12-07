@@ -1,43 +1,29 @@
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  Users,
-  Lock,
-  Clock,
-  Calendar,
-  MessageCircle,
-  Crown,
-  Activity,
-} from "lucide-react";
+import { Room } from "@/context/AppContext";
 import { formatDistanceToNow } from "date-fns";
+import {
+  Activity,
+  Calendar,
+  Crown,
+  MessageCircle,
+  Users
+} from "lucide-react";
 import { JoinRoom } from "./JoinRoom";
-
-interface RoomCardProps {
-  room: {
-    id: string;
-    name: string;
-    description: string;
-    isActive: boolean;
-    participants: number;
-    createdAt: Date;
-  };
-}
 
 export function RoomCard({
   room,
   canJoin = false,
 }: {
-  rooms: RoomCardProps;
+  room: Room;
   canJoin: boolean;
 }) {
-  console.log(room);
   return (
     <Card className="flex flex-col h-full overflow-hidden">
       <CardHeader className="flex flex-col space-y-2 p-4">

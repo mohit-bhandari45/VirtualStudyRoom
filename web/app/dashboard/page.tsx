@@ -33,11 +33,12 @@ export default function Page() {
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(true);
   const [token, setToken] = useState<string | null>(null);
-  const { rooms,setRooms } = useAppContext();
+  const { setRooms } = useAppContext();
 
   useEffect(() => {
     const token: string | null = sessionStorage.getItem("token");
     setToken(token);
+
     if (!token) {
       router.push("/auth/login");
     } else {
@@ -46,16 +47,14 @@ export default function Page() {
   }, [loading, router]);
 
   useEffect(() => {
-    const getAllRooms = async () => {
-      const response = await api.get(getRoomsRoute, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+    const getRooms = async () => {
+      const response = await api.get(getRoomsRoute);
       setRooms(response.data.rooms);
     };
-    getAllRooms();
-  }, [token]);
+
+    getRooms();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <SidebarInset>

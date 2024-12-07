@@ -14,13 +14,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { api, joinRoomRoute } from "@/apis/api";
+import { useAppContext } from "@/context/AppContext";
 
 export function JoinRoom({ id }: { id: string }) {
+  const { setPageRefresh } = useAppContext();
   const dv = `http://localhost:8000/api/room/join/${id}`;
 
   const handleJoinRoom = async () => {
-    const response = await api.get(`${joinRoomRoute}/${id}`);
-    console.log(response);
+    await api.get(`${joinRoomRoute}/${id}`);
+    setPageRefresh(true);
   };
 
   return (

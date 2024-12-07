@@ -1,21 +1,15 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useState,
-  ReactNode,
-  Dispatch,
-  SetStateAction,
-} from "react";
+import { createContext, ReactNode, useContext, useState } from "react";
 
-export interface UserInterface {
+export interface User {
   id: string;
   name: string;
   email: string;
   password: string;
   salt: string;
-  rooms: Room[];
+  roomsCreated: Room[];
+  roomsJoined: UserRoom[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -25,7 +19,7 @@ export interface Room {
   name: string;
   description: string;
   createdById: string;
-  createdBy: UserInterface;
+  participants: UserRoom[];
   videoChatEnabled: boolean;
   isActive: boolean;
   expiresAt: Date;
@@ -33,32 +27,51 @@ export interface Room {
   updatedAt: Date;
 }
 
-interface AppContextType {
-  rooms: Room[] | null;
-  setRooms: Dispatch<SetStateAction<Room[] | null>>;
-  allRooms: Room[] | null;
-  setAllRooms: Dispatch<SetStateAction<Room[] | null>>;
+export interface UserRoom {
+  id: string;
+  userId: string;
+  roomId: string;
+  joinedAt: Date;
+  user: User;
+  room: Room;
 }
 
-const AppContext = createContext<AppContextType | null>(null);
+interface AppContextProps {
+  rooms: Room[] | undefined;
+  setRooms: React.Dispatch<React.SetStateAction<Room[] | undefined>>;
+  allRooms: Room[][] | undefined;
+  setAllRooms: React.Dispatch<React.SetStateAction<Room[][] | undefined>>;
+  pageRefresh: boolean;
+  setPageRefresh: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const AppContext = createContext<AppContextProps | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
-  const [rooms, setRooms] = useState<Room[] | null>(null);
-  const [allRooms, setAllRooms] = useState<Room[] | null>(null);
+  const [rooms, setRooms] = useState<Room[] | undefined>();
+  const [allRooms, setAllRooms] = useState<Room[][] | undefined>();
+  const [pageRefresh, setPageRefresh] = useState<boolean>(false);
 
   return (
-    <AppContext.Provider value={{ rooms, setRooms, allRooms, setAllRooms }}>
+    <AppContext.Provider
+      value={{
+        rooms,
+        setRooms,
+        allRooms,
+        setAllRooms,
+        pageRefresh,
+        setPageRefresh,
+      }}
+    >
       {children}
     </AppContext.Provider>
   );
 };
 
-export const useAppContext = (): AppContextType => {
+export const useAppContext = () => {
   const context = useContext(AppContext);
-
-  if (context === null) {
+  if (!context) {
     throw new Error("useAppContext must be used within an AppProvider");
   }
-
   return context;
 };

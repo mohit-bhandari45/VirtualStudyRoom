@@ -38,6 +38,8 @@ async function handleGetAllRoomHandler(
     return activeRooms;
   });
 
+  console.log(allRooms);
+
   return res.status(200).json({ allRooms });
 }
 

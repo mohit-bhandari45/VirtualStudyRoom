@@ -41,6 +41,7 @@ export default function LoginPage() {
     if (authStates.token && !authStates.loading) {
       router.push("/dashboard");
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
 
   const calculatePasswordStrength = (pass: string) => {
@@ -163,7 +164,7 @@ export default function LoginPage() {
                 htmlFor="email"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Email Address
+                Email Address 
               </Label>
               <div className="relative">
                 <Mail

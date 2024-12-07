@@ -14,20 +14,29 @@ import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { LayoutGrid } from "lucide-react";
 import Skeleton from "react-loading-skeleton";
 import { useRouter } from "next/navigation";
-import { useAppContext } from "@/context/AppContext";
+
+/* Context */
+import { Room, useAppContext } from "@/context/AppContext";
+
+/* Apis */
 import { api, getAllRoomsRoute, getRoomsRoute } from "@/apis/api";
+
+/* Normal Components */
 import RoomsInfo from "@/components/RoomComponents/RoomsInfo";
 import { CreateRoom } from "@/components/RoomComponents/CreateRoom";
 
 const Rooms = () => {
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(true);
+  const [activeRooms, setActiveRooms] = useState<Room[] | undefined>(undefined);
   const [token, setToken] = useState<string | null>(null);
-  const { allRooms, rooms, setAllRooms, setRooms } = useAppContext();
+  const { rooms, allRooms, setRooms, setAllRooms, pageRefresh } =
+    useAppContext();
 
   useEffect(() => {
     const token: string | null = sessionStorage.getItem("token");
     setToken(token);
+
     if (!token) {
       router.push("/auth/login");
     } else {
@@ -36,25 +45,27 @@ const Rooms = () => {
   }, [loading, router]);
 
   useEffect(() => {
-    const getAllRooms = async () => {
-      const response = await api.get(getAllRoomsRoute, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setAllRooms(response.data.allRooms);
-    };
     const getRooms = async () => {
-      const response = await api.get(getRoomsRoute, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await api.get(getRoomsRoute);
       setRooms(response.data.rooms);
     };
+
+    const getAllActiveRooms = async () => {
+      const response = await api.get(getAllRoomsRoute);
+      setAllRooms(response.data.allRooms);
+    };
+
     getRooms();
-    getAllRooms();
-  }, [token]);
+    getAllActiveRooms();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pageRefresh]);
+
+  useEffect(() => {
+    const newArr: Room[] | undefined | null = allRooms?.flatMap(
+      (roomArr) => roomArr
+    );
+    setActiveRooms(newArr);
+  }, [allRooms]);
 
   return (
     <SidebarInset>
@@ -103,7 +114,8 @@ const Rooms = () => {
 
             <div className="grid grid-cols-1">
               <RoomsInfo
-                rooms={rooms?.filter((room) => room.isActive === true)} canJoin={false}
+                rooms={rooms?.filter((room) => room.isActive === true)}
+                canJoin={false}
               />
             </div>
           </div>
@@ -118,9 +130,7 @@ const Rooms = () => {
             </div>
 
             <div className="grid grid-cols-1">
-              {allRooms?.map((room) => {
-                return <RoomsInfo rooms={room} canJoin={true}/>;
-              })}
+              <RoomsInfo rooms={activeRooms} canJoin={true} />;
             </div>
           </div>
         </div>

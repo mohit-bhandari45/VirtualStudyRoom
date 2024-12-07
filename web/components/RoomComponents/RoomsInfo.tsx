@@ -1,18 +1,10 @@
 import React from "react";
 import { RoomCard } from "./RoomCard";
 import { Carousel, CarouselContent, CarouselItem } from "../ui/carousel";
-
-interface Room {
-  id: string;
-  name: string;
-  description: string;
-  isActive: boolean;
-  participants: number;
-  createdAt: Date;
-}
+import { Room } from "@/context/AppContext";
 
 interface RoomCardProps {
-  rooms: Room[] | null;
+  rooms: Room[] | undefined;
   canJoin: boolean;
 }
 

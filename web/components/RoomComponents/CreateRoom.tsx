@@ -16,7 +16,6 @@ import { PlusCircle } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { api, createRoomRoute } from "@/apis/api";
-import axios from "axios";
 
 interface RoomDetails {
   name: string;
