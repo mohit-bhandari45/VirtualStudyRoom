@@ -1,7 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 /* Shadcn Components */
 import {
@@ -13,27 +12,18 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { LayoutGrid } from "lucide-react";
-import source from "./data";
-
-/* React Components */
-import { CreateRoom } from "@/components/RoomComponents/CreateRoom";
-import ActiveRoomCard from "@/components/DashBoardComponents/ActiveRoomCard";
-import EventCard from "@/components/DashBoardComponents/EventCard";
-import RecentActivity from "@/components/DashBoardComponents/RecentActivity";
-import TotalRoomCard from "@/components/DashBoardComponents/TotalRoomCard";
-import TotalUserCard from "@/components/DashBoardComponents/TotalUserCard";
-import { api, getRoomsRoute } from "@/apis/api";
-
 import Skeleton from "react-loading-skeleton";
-import "react-loading-skeleton/dist/skeleton.css";
+import { useRouter } from "next/navigation";
 import { useAppContext } from "@/context/AppContext";
-import Link from "next/link";
+import { api, getAllRoomsRoute, getRoomsRoute } from "@/apis/api";
+import RoomsInfo from "@/components/RoomComponents/RoomsInfo";
+import { CreateRoom } from "@/components/RoomComponents/CreateRoom";
 
-export default function Page() {
+const Rooms = () => {
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(true);
   const [token, setToken] = useState<string | null>(null);
-  const { rooms,setRooms } = useAppContext();
+  const { allRooms, rooms, setAllRooms, setRooms } = useAppContext();
 
   useEffect(() => {
     const token: string | null = sessionStorage.getItem("token");
@@ -47,6 +37,14 @@ export default function Page() {
 
   useEffect(() => {
     const getAllRooms = async () => {
+      const response = await api.get(getAllRoomsRoute, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setAllRooms(response.data.allRooms);
+    };
+    const getRooms = async () => {
       const response = await api.get(getRoomsRoute, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -54,6 +52,7 @@ export default function Page() {
       });
       setRooms(response.data.rooms);
     };
+    getRooms();
     getAllRooms();
   }, [token]);
 
@@ -66,7 +65,7 @@ export default function Page() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/dashboard">Home</BreadcrumbLink>
+                <BreadcrumbLink href="/dashboard">Room</BreadcrumbLink>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -77,29 +76,57 @@ export default function Page() {
           <Skeleton width={1200} height={680} count={1} />
         </div>
       ) : (
-        <div className="p-6 bg-gray-50 min-h-screen">
+        <div className="p-6 bg-gray-50 min-h-screen flex flex-col gap-10">
           <div className="container mx-auto">
             {/* Quick Actions */}
             <div className="mb-6 flex justify-between items-center">
               <h1 className="text-xl font-bold text-gray-800 flex items-center">
                 <LayoutGrid className="mr-3 text-primary" size={24} />
-                DashBoard
+                Rooms
               </h1>
               <CreateRoom token={token} />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-              <Link href={"/rooms"}>
-                <TotalRoomCard />
-              </Link>
-              <ActiveRoomCard />
-              <TotalUserCard />
-              <EventCard scheduledEvents={source.scheduledEvents} />
+            <div className="grid grid-cols-1">
+              <RoomsInfo rooms={rooms} canJoin={false} />
             </div>
-            <RecentActivity recentActivity={source.recentActivity} />
+          </div>
+
+          <div className="container mx-auto">
+            {/* Quick Actions */}
+            <div className="mb-6 flex justify-between items-center">
+              <h1 className="text-xl font-bold text-gray-800 flex items-center">
+                <LayoutGrid className="mr-3 text-primary" size={24} />
+                Active Rooms
+              </h1>
+            </div>
+
+            <div className="grid grid-cols-1">
+              <RoomsInfo
+                rooms={rooms?.filter((room) => room.isActive === true)} canJoin={false}
+              />
+            </div>
+          </div>
+
+          <div className="container mx-auto">
+            {/* Quick Actions */}
+            <div className="mb-6 flex justify-between items-center">
+              <h1 className="text-xl font-bold text-gray-800 flex items-center">
+                <LayoutGrid className="mr-3 text-primary" size={24} />
+                Join Rooms
+              </h1>
+            </div>
+
+            <div className="grid grid-cols-1">
+              {allRooms?.map((room) => {
+                return <RoomsInfo rooms={room} canJoin={true}/>;
+              })}
+            </div>
           </div>
         </div>
       )}
     </SidebarInset>
   );
-}
+};
+
+export default Rooms;

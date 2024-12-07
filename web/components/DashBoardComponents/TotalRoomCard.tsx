@@ -2,13 +2,10 @@
 
 import { Building } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { useAppContext } from "@/context/AppContext";
 
-const TotalRoomCard = ({
-  totalRooms,
-}: {
-  totalRooms: number;
-}) => {
-  
+const TotalRoomCard = () => {
+  const { rooms } = useAppContext();
 
   return (
     <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
@@ -19,7 +16,7 @@ const TotalRoomCard = ({
         <Building className="text-muted-foreground" size={20} />
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold text-blue-600">{totalRooms}</div>
+        <div className="text-2xl font-bold text-blue-600">{rooms?.length}</div>
         <p className="text-xs text-gray-500">Created rooms</p>
       </CardContent>
     </Card>

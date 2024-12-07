@@ -15,20 +15,24 @@ import { Label } from "@/components/ui/label";
 import { PlusCircle } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { api, createRoomRoute } from "@/apis/api";
+import axios from "axios";
 
 interface RoomDetails {
   name: string;
   description: string;
+  duration: number;
   features: {
     video: boolean;
   };
 }
 
-export function CreateRoom() {
+export function CreateRoom({ token }: { token: string | null }) {
   const { toast } = useToast();
   const [roomDetails, setRoomDetails] = useState<RoomDetails>({
     name: "",
     description: "",
+    duration: 0,
     features: {
       video: false,
     },
@@ -48,8 +52,24 @@ export function CreateRoom() {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     console.log(roomDetails);
+    console.log(token);
+
+    const response = await api.post(
+      createRoomRoute,
+      {
+        name: roomDetails.name,
+        description: roomDetails.description,
+        duration: roomDetails.duration,
+        features: {
+          video: roomDetails.features.video,
+        },
+      },
+    );
+
+    console.log(response.data);
+
     toast({
       description: "Your room has been created",
     });
@@ -77,7 +97,6 @@ export function CreateRoom() {
             </Label>
             <Input
               id="name"
-              defaultValue="Pedro Duarte"
               className="col-span-3"
               onChange={(e) => {
                 handleChange(e);
@@ -90,7 +109,6 @@ export function CreateRoom() {
             </Label>
             <Input
               id="description"
-              defaultValue="@peduarte"
               className="col-span-3"
               onChange={(e) => {
                 handleChange(e);
@@ -105,7 +123,21 @@ export function CreateRoom() {
               type="checkbox"
               id="video"
               defaultValue="false"
-              //   className="col-span-3"
+              className="col-span-3 h-4 w-4 cursor-pointer" // Smaller checkbox
+              onChange={(e) => {
+                handleChange(e);
+              }}
+            />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="duration" className="text-right">
+              Duration
+            </Label>
+            <Input
+              id="duration"
+              type="number"
+              placeholder="Duration (hours)"
+              className="col-span-3"
               onChange={(e) => {
                 handleChange(e);
               }}
