@@ -12,7 +12,6 @@ interface RecentActivity{
 }
 
 interface Source {
-    totalRooms: number,
     activeRooms: number,
     totalParticipants: number,
     scheduledEvents: Event[],
@@ -20,7 +19,6 @@ interface Source {
 }
 
 const source: Source = {
-    totalRooms: 45,
     activeRooms: 2,
     totalParticipants: 256,
     scheduledEvents: [

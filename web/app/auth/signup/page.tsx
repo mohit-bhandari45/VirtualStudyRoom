@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -22,9 +22,18 @@ import handleGoogleLogin from "@/utils/utils";
 import LeftPanel from "@/components/AuthComponents/LeftPanel";
 import { GoogleLogin } from "@react-oauth/google";
 import Link from "next/link";
+import { useToast } from "@/hooks/use-toast";
 
 export default function SignupPage() {
+  const { toast } = useToast();
   const router = useRouter();
+
+  useEffect(() => {
+    const token: string | null = sessionStorage.getItem("token");
+    if (token) {
+      router.push("/dashboard");
+    }
+  }, [router]);
 
   const [formData, setFormData] = useState<FormData>({
     name: "",
@@ -144,8 +153,13 @@ export default function SignupPage() {
     });
 
     if (response.status == 201) {
-      router.push("/login");
+      router.push("/auth/login");
     } else {
+      toast({
+        title: response.data.msg,
+        description: "There was a problem with your request.",
+      });
+
       console.log(response.data.msg);
     }
   };
@@ -215,7 +229,15 @@ export default function SignupPage() {
                 onSuccess={async (credentialResponse) => {
                   const login = await handleGoogleLogin(credentialResponse);
                   if (login) {
+                    toast({
+                      title: "Login Successfull!",
+                    });
                     router.push("/dashboard");
+                  } else {
+                    toast({
+                      title: "Uh oh! Something went wrong.",
+                      description: "There was a problem with your request.",
+                    });
                   }
                 }}
                 onError={() => {
