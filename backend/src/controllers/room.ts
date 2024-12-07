@@ -54,7 +54,7 @@ async function handleGetRoomHandler(req: Request, res: Response): Promise<any> {
       roomsCreated: {
         include: {
           participants: true,
-        }
+        },
       },
     },
   });
@@ -67,7 +67,6 @@ async function handleCreateRoomHandler(
   req: Request,
   res: Response
 ): Promise<any> {
-
   const { id } = req.user as UserInterface;
   const roomDetails = req.body;
   const fixedDuration = roomDetails.duration * 60 * 60 * 1000;
@@ -105,7 +104,10 @@ interface Params {
   id: string;
 }
 
-async function handleJoinRoomHandler(req: Request<Params>, res: Response): Promise<any> {
+async function handleJoinRoomHandler(
+  req: Request<Params>,
+  res: Response
+): Promise<any> {
   const { id: roomId } = req.params;
   const { id: userId } = req.user as UserInterface;
 
