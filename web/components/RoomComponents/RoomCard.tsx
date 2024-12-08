@@ -1,3 +1,5 @@
+"use client";
+
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -6,16 +8,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Room } from "@/context/AppContext";
+import { Room, UserRoom } from "@/context/AppContext";
 import { formatDistanceToNow } from "date-fns";
-import {
-  Activity,
-  Calendar,
-  Crown,
-  MessageCircle,
-  Users
-} from "lucide-react";
+import { Activity, Calendar, Crown, MessageCircle, Users } from "lucide-react";
 import { JoinRoom } from "./JoinRoom";
+import { useEffect, useState } from "react";
+import { api, getJoinedRoomsRoute } from "@/apis/api";
 
 export function RoomCard({
   room,
@@ -24,6 +22,33 @@ export function RoomCard({
   room: Room;
   canJoin: boolean;
 }) {
+  const [joinedRooms, setJoinedRooms] = useState<UserRoom[] | undefined>(
+    undefined
+  );
+  const [joined, setJoined] = useState<boolean | undefined>(undefined);
+
+  useEffect(() => {
+    const getJoinedRooms = async () => {
+      const response = await api.get(getJoinedRoomsRoute);
+      setJoinedRooms(response.data);
+    };
+    if (canJoin == true) {
+      getJoinedRooms();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (canJoin == true) {
+      const isJoined = joinedRooms?.some((joinedRoom) => {
+        return joinedRoom.roomId === room.id;
+      });
+      setJoined(isJoined);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [joinedRooms]);
+  console.log(canJoin && joined === undefined);
+
   return (
     <Card className="flex flex-col h-full overflow-hidden">
       <CardHeader className="flex flex-col space-y-2 p-4">
@@ -46,7 +71,12 @@ export function RoomCard({
             </div>
             <div className="join">
               <CardTitle className="text-base sm:text-lg font-semibold line-clamp-1">
-                {canJoin ? <JoinRoom id={room.id} /> : null}
+                {canJoin && joined === false ? <JoinRoom id={room.id} /> : null}
+                {canJoin && joined ? (
+                  <Badge variant={"secondary"} className="px-2 py-0.5 text-xs">
+                    Joined
+                  </Badge>
+                ) : null}
               </CardTitle>
             </div>
           </div>

@@ -16,6 +16,8 @@ import { PlusCircle } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { api, createRoomRoute } from "@/apis/api";
+import { useAppContext } from "@/context/AppContext";
+import { useRouter } from "next/navigation";
 
 interface RoomDetails {
   name: string;
@@ -26,7 +28,8 @@ interface RoomDetails {
   };
 }
 
-export function CreateRoom({ token }: { token: string | null }) {
+export function CreateRoom() {
+  const router = useRouter();
   const { toast } = useToast();
   const [roomDetails, setRoomDetails] = useState<RoomDetails>({
     name: "",
@@ -36,6 +39,8 @@ export function CreateRoom({ token }: { token: string | null }) {
       video: false,
     },
   });
+
+  const { setPageRefresh } = useAppContext();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id } = e.target;
@@ -52,26 +57,23 @@ export function CreateRoom({ token }: { token: string | null }) {
   };
 
   const handleSubmit = async () => {
-    console.log(roomDetails);
-    console.log(token);
+    setPageRefresh(true);
 
-    const response = await api.post(
-      createRoomRoute,
-      {
-        name: roomDetails.name,
-        description: roomDetails.description,
-        duration: roomDetails.duration,
-        features: {
-          video: roomDetails.features.video,
-        },
+    const response = await api.post(createRoomRoute, {
+      name: roomDetails.name,
+      description: roomDetails.description,
+      duration: roomDetails.duration,
+      features: {
+        video: roomDetails.features.video,
       },
-    );
-
-    console.log(response.data);
+    });
+    
+    router.push(`/rooms/${response.data.room.id}`);
 
     toast({
       description: "Your room has been created",
     });
+    setPageRefresh(false);
   };
 
   return (

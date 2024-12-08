@@ -13,6 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { LayoutGrid } from "lucide-react";
 import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import { useRouter } from "next/navigation";
 
 /* Context */
@@ -24,10 +25,13 @@ import { api, getAllRoomsRoute, getRoomsRoute } from "@/apis/api";
 /* Normal Components */
 import RoomsInfo from "@/components/RoomComponents/RoomsInfo";
 import { CreateRoom } from "@/components/RoomComponents/CreateRoom";
+import Loader from "@/components/RoomComponents/Loader";
+import { PropagateLoader } from "react-spinners";
 
 const Rooms = () => {
   const router = useRouter();
-  const [loading, setLoading] = useState<boolean>(true);
+  const [skeletonLoading, setSkeletonLoading] = useState<boolean>(true);
+  const [dataLoading, setDataLoading] = useState<boolean>(true);
   const [activeRooms, setActiveRooms] = useState<Room[] | undefined>(undefined);
   const [token, setToken] = useState<string | null>(null);
   const { rooms, allRooms, setRooms, setAllRooms, pageRefresh } =
@@ -40,9 +44,9 @@ const Rooms = () => {
     if (!token) {
       router.push("/auth/login");
     } else {
-      setLoading(false);
+      setSkeletonLoading(false);
     }
-  }, [loading, router]);
+  }, [skeletonLoading, router]);
 
   useEffect(() => {
     const getRooms = async () => {
@@ -57,17 +61,22 @@ const Rooms = () => {
 
     getRooms();
     getAllActiveRooms();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageRefresh]);
 
   useEffect(() => {
+    if (rooms && allRooms) {
+      setDataLoading(false);
+    }
     const newArr: Room[] | undefined | null = allRooms?.flatMap(
       (roomArr) => roomArr
     );
     setActiveRooms(newArr);
-  }, [allRooms]);
+  }, [allRooms, rooms]);
 
-  return (
+  return pageRefresh ? (
+    <Loader />
+  ) : (
     <SidebarInset>
       <header className="flex h-16 shrink-0 items-center gap-2">
         <div className="flex items-center gap-2 px-4">
@@ -82,9 +91,9 @@ const Rooms = () => {
           </Breadcrumb>
         </div>
       </header>
-      {loading ? (
-        <div className="flex justify-center w-full h-full items-center">
-          <Skeleton width={1200} height={680} count={1} />
+      {skeletonLoading ? (
+        <div className="min-h-screen">
+          <Skeleton className="w-full h-full" count={1} />
         </div>
       ) : (
         <div className="p-6 bg-gray-50 min-h-screen flex flex-col gap-10">
@@ -95,12 +104,18 @@ const Rooms = () => {
                 <LayoutGrid className="mr-3 text-primary" size={24} />
                 Rooms
               </h1>
-              <CreateRoom token={token} />
+              <CreateRoom />
             </div>
 
-            <div className="grid grid-cols-1">
-              <RoomsInfo rooms={rooms} canJoin={false} />
-            </div>
+            {dataLoading ? (
+              <div className="w-full flex justify-center items-center">
+                <PropagateLoader />
+              </div>
+            ) : (
+              <div className="grid grid-cols-1">
+                <RoomsInfo rooms={rooms} canJoin={false} />
+              </div>
+            )}
           </div>
 
           <div className="container mx-auto">
@@ -112,12 +127,18 @@ const Rooms = () => {
               </h1>
             </div>
 
-            <div className="grid grid-cols-1">
-              <RoomsInfo
-                rooms={rooms?.filter((room) => room.isActive === true)}
-                canJoin={false}
-              />
-            </div>
+            {dataLoading ? (
+              <div className="w-full flex justify-center items-center">
+                <PropagateLoader />
+              </div>
+            ) : (
+              <div className="grid grid-cols-1">
+                <RoomsInfo
+                  rooms={rooms?.filter((room) => room.isActive === true)}
+                  canJoin={false}
+                />
+              </div>
+            )}
           </div>
 
           <div className="container mx-auto">
@@ -129,9 +150,15 @@ const Rooms = () => {
               </h1>
             </div>
 
-            <div className="grid grid-cols-1">
-              <RoomsInfo rooms={activeRooms} canJoin={true} />;
-            </div>
+            {dataLoading ? (
+              <div className="w-full flex justify-center items-center">
+                <PropagateLoader />
+              </div>
+            ) : (
+              <div className="grid grid-cols-1">
+                <RoomsInfo rooms={activeRooms} canJoin={true} />
+              </div>
+            )}
           </div>
         </div>
       )}

@@ -15,14 +15,23 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { api, joinRoomRoute } from "@/apis/api";
 import { useAppContext } from "@/context/AppContext";
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 export function JoinRoom({ id }: { id: string }) {
+  const { toast } = useToast();
+  const router = useRouter();
   const { setPageRefresh } = useAppContext();
   const dv = `http://localhost:8000/api/room/join/${id}`;
 
   const handleJoinRoom = async () => {
-    await api.get(`${joinRoomRoute}/${id}`);
     setPageRefresh(true);
+    await api.get(`${joinRoomRoute}/${id}`);
+    router.push(`/rooms/${id}`);
+    toast({
+      description: "Room Joined!",
+    });
+    setPageRefresh(false);
   };
 
   return (

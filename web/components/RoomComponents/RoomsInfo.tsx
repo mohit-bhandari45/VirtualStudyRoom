@@ -1,7 +1,6 @@
-import React from "react";
-import { RoomCard } from "./RoomCard";
-import { Carousel, CarouselContent, CarouselItem } from "../ui/carousel";
 import { Room } from "@/context/AppContext";
+import { Carousel, CarouselContent, CarouselItem } from "../ui/carousel";
+import { RoomCard } from "./RoomCard";
 
 interface RoomCardProps {
   rooms: Room[] | undefined;

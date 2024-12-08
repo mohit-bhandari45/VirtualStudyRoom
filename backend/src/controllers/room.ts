@@ -38,8 +38,6 @@ async function handleGetAllRoomHandler(
     return activeRooms;
   });
 
-  console.log(allRooms);
-
   return res.status(200).json({ allRooms });
 }
 
@@ -61,6 +59,25 @@ async function handleGetRoomHandler(req: Request, res: Response): Promise<any> {
   const rooms = userWithRooms?.roomsCreated;
 
   return res.status(200).json({ rooms });
+}
+
+async function handleGetJoinedRoomsHandler(
+  req: Request,
+  res: Response
+): Promise<any> {
+  const { id } = req.user as UserInterface;
+
+  try {
+    const joinedRooms = await prismaClient.userRoom.findMany({
+      where: {
+        userId: id,
+      },
+    });
+    return res.status(200).json(joinedRooms);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ msg: "Internal Server error" });
+  }
 }
 
 async function handleCreateRoomHandler(
@@ -133,8 +150,6 @@ async function handleJoinRoomHandler(
       },
     });
 
-    console.log(roomJoined);
-
     return res.status(201).json({ roomJoined });
   } catch (error) {
     console.error("Error joining room:", error);
@@ -145,6 +160,7 @@ async function handleJoinRoomHandler(
 export {
   handleGetRoomHandler,
   handleGetAllRoomHandler,
+  handleGetJoinedRoomsHandler,
   handleCreateRoomHandler,
   handleJoinRoomHandler,
 };

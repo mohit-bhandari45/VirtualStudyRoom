@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
-import { LayoutGrid } from "lucide-react";
+import {  LayoutGrid } from "lucide-react";
 import source from "./data";
 
 /* React Components */
@@ -28,12 +28,15 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useAppContext } from "@/context/AppContext";
 import Link from "next/link";
+import Loader from "@/components/RoomComponents/Loader";
 
 export default function Page() {
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(true);
   const [token, setToken] = useState<string | null>(null);
   const { setRooms } = useAppContext();
+
+  const { pageRefresh } = useAppContext();
 
   useEffect(() => {
     const token: string | null = sessionStorage.getItem("token");
@@ -54,9 +57,11 @@ export default function Page() {
 
     getRooms();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [pageRefresh]);
 
-  return (
+  return pageRefresh ? (
+    <Loader />
+  ) : (
     <SidebarInset>
       <header className="flex h-16 shrink-0 items-center gap-2">
         <div className="flex items-center gap-2 px-4">
@@ -72,8 +77,8 @@ export default function Page() {
         </div>
       </header>
       {loading ? (
-        <div className="flex justify-center w-full h-full items-center">
-          <Skeleton width={1200} height={680} count={1} />
+        <div className="min-h-screen">
+          <Skeleton className="w-full h-full" count={1} />
         </div>
       ) : (
         <div className="p-6 bg-gray-50 min-h-screen">
@@ -84,14 +89,16 @@ export default function Page() {
                 <LayoutGrid className="mr-3 text-primary" size={24} />
                 DashBoard
               </h1>
-              <CreateRoom token={token} />
+              <CreateRoom />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
               <Link href={"/rooms"}>
                 <TotalRoomCard />
               </Link>
-              <ActiveRoomCard />
+              <Link href={"/rooms"}>
+                <ActiveRoomCard />
+              </Link>
               <TotalUserCard />
               <EventCard scheduledEvents={source.scheduledEvents} />
             </div>
