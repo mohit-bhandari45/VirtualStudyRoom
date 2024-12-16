@@ -27,11 +27,11 @@ async function handleGetAllRoomHandler(
     },
   });
 
-  let allRooms = users.map((user) => {
+  let allRooms = users.map((user: any) => {
     return user.roomsCreated || [];
   });
 
-  allRooms = allRooms.map((roomArr) => {
+  allRooms = allRooms.map((roomArr: any) => {
     const activeRooms = roomArr.filter((room: any) => {
       return room.isActive === true;
     });
