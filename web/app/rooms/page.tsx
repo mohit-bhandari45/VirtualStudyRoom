@@ -74,6 +74,8 @@ const Rooms = () => {
     setActiveRooms(newArr);
   }, [allRooms, rooms]);
 
+  console.log(token)
+
   return pageRefresh ? (
     <Loader />
   ) : (

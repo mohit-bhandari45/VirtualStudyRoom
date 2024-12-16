@@ -58,6 +58,7 @@ export default function Page() {
     getRooms();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageRefresh]);
+  console.log(token)
 
   return pageRefresh ? (
     <Loader />

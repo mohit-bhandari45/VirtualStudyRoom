@@ -47,7 +47,8 @@ export function RoomCard({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [joinedRooms]);
-  console.log(canJoin && joined === undefined);
+
+  console.log(room)
 
   return (
     <Card className="flex flex-col h-full overflow-hidden">

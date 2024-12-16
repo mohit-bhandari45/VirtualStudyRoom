@@ -1,11 +1,11 @@
 "use client";
 
-import { baseURL } from "@/apis/api";
+// import { baseURL } from "@/apis/api";
 // import { useParams } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 
-import io from "socket.io-client";
-const socket = io(baseURL);
+// import io from "socket.io-client";
+// const socket = io(baseURL);
 
 const RoomPage: React.FC = () => {
   // const { roomId } = useParams();
@@ -31,6 +31,7 @@ const RoomPage: React.FC = () => {
     };
 
     getLocalStream();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
