@@ -28,7 +28,10 @@ async function handleGetAllRoomHandler(
   });
 
   let allRooms = users.map((user: any) => {
-    return user.roomsCreated || [];
+    if (user.roomsCreated.length > 0) {
+      return user.roomsCreated;
+    }
+    return null;
   });
 
   allRooms = allRooms.map((roomArr: any) => {
@@ -37,6 +40,7 @@ async function handleGetAllRoomHandler(
     });
     return activeRooms;
   });
+  console.log(allRooms);
 
   return res.status(200).json({ allRooms });
 }
