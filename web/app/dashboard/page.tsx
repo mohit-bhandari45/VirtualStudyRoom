@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useRouter } from "next/navigation";
@@ -58,7 +59,6 @@ export default function Page() {
     getRooms();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageRefresh]);
-  console.log(token)
 
   return pageRefresh ? (
     <Loader />

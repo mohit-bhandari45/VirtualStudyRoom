@@ -40,15 +40,17 @@ export function RoomCard({
 
   useEffect(() => {
     if (canJoin == true) {
-      const isJoined = joinedRooms?.some((joinedRoom) => {
-        return joinedRoom.roomId === room.id;
-      });
-      setJoined(isJoined);
+      const isJoined = joinedRooms?.find(
+        (joinedRoom) => joinedRoom.roomId === room.id
+      );
+      if (isJoined != null) {
+        setJoined(true);
+      } else {
+        setJoined(false);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [joinedRooms]);
-
-  console.log(room)
 
   return (
     <Card className="flex flex-col h-full overflow-hidden">

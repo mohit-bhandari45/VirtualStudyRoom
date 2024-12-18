@@ -33,6 +33,7 @@ const Rooms = () => {
   const [skeletonLoading, setSkeletonLoading] = useState<boolean>(true);
   const [dataLoading, setDataLoading] = useState<boolean>(true);
   const [activeRooms, setActiveRooms] = useState<Room[] | undefined>(undefined);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [token, setToken] = useState<string | null>(null);
   const { rooms, allRooms, setRooms, setAllRooms, pageRefresh } =
     useAppContext();
@@ -73,8 +74,6 @@ const Rooms = () => {
     );
     setActiveRooms(newArr);
   }, [allRooms, rooms]);
-
-  console.log(token)
 
   return pageRefresh ? (
     <Loader />

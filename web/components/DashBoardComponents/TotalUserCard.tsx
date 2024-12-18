@@ -12,13 +12,10 @@ const TotalUserCard = () => {
   const { rooms } = useAppContext();
 
   useEffect(() => {
-    const total = rooms?.reduce(
-      (total, room) => total + room.participants.length,
-      0
-    );
+    const total=rooms?.reduce((total,room)=>total+room.participants.length,0);
     setTotalParticipants(total);
   }, [rooms]);
-    
+
   return (
     <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
