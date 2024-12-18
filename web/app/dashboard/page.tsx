@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 /* Shadcn Components */
 import {
@@ -10,41 +11,58 @@ import {
   BreadcrumbLink,
   BreadcrumbList,
 } from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
-import { LayoutGrid, PlusCircle } from "lucide-react";
+import {  LayoutGrid } from "lucide-react";
 import source from "./data";
 
 /* React Components */
+import { CreateRoom } from "@/components/RoomComponents/CreateRoom";
 import ActiveRoomCard from "@/components/DashBoardComponents/ActiveRoomCard";
-import TotalUserCard from "@/components/DashBoardComponents/TotalUserCard";
 import EventCard from "@/components/DashBoardComponents/EventCard";
 import RecentActivity from "@/components/DashBoardComponents/RecentActivity";
 import TotalRoomCard from "@/components/DashBoardComponents/TotalRoomCard";
+import TotalUserCard from "@/components/DashBoardComponents/TotalUserCard";
+import { api, getRoomsRoute } from "@/apis/api";
+
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+import { useAppContext } from "@/context/AppContext";
+import Link from "next/link";
+import Loader from "@/components/RoomComponents/Loader";
 
 export default function Page() {
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(true);
   const [token, setToken] = useState<string | null>(null);
+  const { setRooms } = useAppContext();
+
+  const { pageRefresh } = useAppContext();
 
   useEffect(() => {
     const token: string | null = sessionStorage.getItem("token");
     setToken(token);
-    setLoading(false);
-  }, []);
+
+    if (!token) {
+      router.push("/auth/login");
+    } else {
+      setLoading(false);
+    }
+  }, [loading, router]);
 
   useEffect(() => {
-    if (!loading && !token) {
-      router.push("/auth/login");
-    }
-  }, [loading, token, router]);
+    const getRooms = async () => {
+      const response = await api.get(getRoomsRoute);
+      setRooms(response.data.rooms);
+    };
 
-  if (loading) {
-    <div>Loading...</div>;
-  }
+    getRooms();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pageRefresh]);
 
-  return (
+  return pageRefresh ? (
+    <Loader />
+  ) : (
     <SidebarInset>
       <header className="flex h-16 shrink-0 items-center gap-2">
         <div className="flex items-center gap-2 px-4">
@@ -55,38 +73,40 @@ export default function Page() {
               <BreadcrumbItem className="hidden md:block">
                 <BreadcrumbLink href="/dashboard">Home</BreadcrumbLink>
               </BreadcrumbItem>
-
-              {/* <BreadcrumbSeparator className="hidden md:block" /> */}
-              {/* <BreadcrumbItem>
-                <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-              </BreadcrumbItem> */}
             </BreadcrumbList>
           </Breadcrumb>
         </div>
       </header>
-      <div className="p-6 bg-gray-50 min-h-screen">
-        <div className="container mx-auto">
-          {/* Quick Actions */}
-          <div className="mb-6 flex justify-between items-center">
-            <h1 className="text-xl font-bold text-gray-800 flex items-center">
-              <LayoutGrid className="mr-3 text-primary" size={24} />
-              DashBoard
-            </h1>
-            <Button className="bg-black hover:bg-gray-800 text-white">
-              <PlusCircle className="mr-2" size={20} />
-              Create New Room
-            </Button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-            <TotalRoomCard totalRooms={source.totalRooms} />
-            <ActiveRoomCard activeRooms={source.activeRooms} />
-            <TotalUserCard totalParticipants={source.totalParticipants} />
-            <EventCard scheduledEvents={source.scheduledEvents} />
-          </div>
-          <RecentActivity recentActivity={source.recentActivity} />
+      {loading ? (
+        <div className="min-h-screen">
+          <Skeleton className="w-full h-full" count={1} />
         </div>
-      </div>
+      ) : (
+        <div className="p-6 bg-gray-50 min-h-screen">
+          <div className="container mx-auto">
+            {/* Quick Actions */}
+            <div className="mb-6 flex justify-between items-center">
+              <h1 className="text-xl font-bold text-gray-800 flex items-center">
+                <LayoutGrid className="mr-3 text-primary" size={24} />
+                DashBoard
+              </h1>
+              <CreateRoom />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+              <Link href={"/rooms"}>
+                <TotalRoomCard />
+              </Link>
+              <Link href={"/rooms"}>
+                <ActiveRoomCard />
+              </Link>
+              <TotalUserCard />
+              <EventCard scheduledEvents={source.scheduledEvents} />
+            </div>
+            <RecentActivity recentActivity={source.recentActivity} />
+          </div>
+        </div>
+      )}
     </SidebarInset>
   );
 }

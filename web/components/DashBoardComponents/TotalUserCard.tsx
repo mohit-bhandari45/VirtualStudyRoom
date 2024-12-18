@@ -1,12 +1,21 @@
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Users } from "lucide-react";
+"use client";
 
-const TotalUserCard = ({
-  totalParticipants,
-}: {
-  totalParticipants: number;
-}) => {
+import { Users } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { useAppContext } from "@/context/AppContext";
+import { useEffect, useState } from "react";
+
+const TotalUserCard = () => {
+  const [totalParticipants, setTotalParticipants] = useState<
+    number | undefined
+  >(0);
+  const { rooms } = useAppContext();
+
+  useEffect(() => {
+    const total=rooms?.reduce((total,room)=>total+room.participants.length,0);
+    setTotalParticipants(total);
+  }, [rooms]);
+
   return (
     <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
